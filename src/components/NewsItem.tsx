@@ -1,14 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, Linking } from 'react-native';
 
-interface NewsProps {
+interface NewsItemProps {
   title: string;
   image?: string | null;
   published: string;
   link: string;
 }
 
-export default function News({ title, image, published, link }: NewsProps) {
+export default function NewsItem({ title, image, published, link }: NewsItemProps) {
   const handlePress = async () => {
     try {
       const supported = await Linking.canOpenURL(link);
