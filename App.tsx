@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native';
-import News from './src/components/News';
+import {StyleSheet, Text, View, SafeAreaView, ActivityIndicator, Image} from 'react-native';
 
 import { fetchNewsService, NewsData } from './src/utils/handle-api';
+import NewsList from "./src/components/NewsList";
 
 export default function App() {
   const [newsList, setNewsList] = useState<NewsData[]>([]);
+  const [newsAmount, setNewsAmount] = useState(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,6 +20,7 @@ export default function App() {
       setLoading(true);
       const data = await fetchNewsService();
       setNewsList(data);
+      setNewsAmount(data.length);
     } catch (err: any) {
       setError(err.message || "Erro ao obter notícias");
     } finally {
@@ -31,7 +33,9 @@ export default function App() {
       <StatusBar style="dark" />
       
       <View style={styles.header}>
+        <Image source={require("./assets/newspaper-banner.png")} style={{width: 40, height: 40}} />
         <Text style={styles.headerTitle}>Últimas notícias</Text>
+        <Text>Atualmente temos {newsAmount} notícias!</Text>
       </View>
 
       {loading ? (
@@ -44,17 +48,7 @@ export default function App() {
           <Text style={styles.errorText}>Erro: {error}</Text>
         </View>
       ) : (
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          {newsList.map((item) => (
-            <News
-              key={item.id.toString()}
-              title={item.title}
-              image={item.image}
-              published={item.published}
-              link={item.link}
-            />
-          ))}
-        </ScrollView>
+        <NewsList newsList={newsList} />
       )}
     </SafeAreaView>
   );
@@ -71,6 +65,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
     alignItems: 'center',
+    flexDirection: 'column',
+    gap: 6,
     paddingTop: 40, // Ensure header is spaced from exact top
   },
   headerTitle: {
